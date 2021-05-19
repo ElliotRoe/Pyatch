@@ -39,7 +39,7 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-init_thread = threading.Thread(target=game.main)
+init_thread = threading.Thread(target=game.start)
 init_thread.start()
 loop_thread = threading.Thread()
 while not done:

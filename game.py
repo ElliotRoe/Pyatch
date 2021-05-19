@@ -1,5 +1,5 @@
 import time
-
+import main
 from sprite import Sprite
 from mouse import Mouse
 
@@ -7,5 +7,6 @@ from mouse import Mouse
 default_cat = Sprite()
 
 
-def main():
+# PUT ALL YOUR CODE IN HERE #
+def start():
     default_cat.move(100)
