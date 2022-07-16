@@ -2,8 +2,9 @@ import threading
 
 import pygame
 
-from pen_group import PenGroup
-from sprite import Sprite
+from pyatch_group import PyatchGroup
+import sprite
+from pygame.sprite import Group
 
 # Define some colors
 
@@ -15,20 +16,33 @@ RED = (255, 0, 0)
 # Initialize Pygame
 pygame.init()
 
+# init sprite font
+font = pygame.font.Font('data/fonts/arial.ttf', 20)
+
+
+from sensing import sensing
+
 # Set the height and width of the screen
 screen_width = 700
 screen_height = 400
 screen = pygame.display.set_mode([screen_width, screen_height])
 
-pen_list = pygame.sprite.Group()
-sprite_list = PenGroup(pen_list)
-## INIT ##
+screen.set_colorkey(sprite.Sprite.key_color)
 
+sprite_list = PyatchGroup()
+
+## INIT ##
 import game
+
 members = list(vars(game).keys())
+loop_list = []
+loop_keyword = 'loop'
 for m in members:
     temp = getattr(game, m)
-    if isinstance(temp, Sprite):
+    if callable(temp) and loop_keyword in m:
+        #print(temp)
+        loop_list.append(temp)
+    if isinstance(temp, sprite.Sprite):
         sprite_list.add(temp)
 ## INIT ##
 
@@ -42,24 +56,20 @@ clock = pygame.time.Clock()
 init_thread = threading.Thread(target=game.start)
 init_thread.start()
 loop_thread = threading.Thread()
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
-                print('go forward')
-            if event.key == pygame.K_s:
-                print('go backward')
-        if event.type == pygame.QUIT:
-            done = True
+while not sensing.done:
+    sensing.parse_events(pygame.event.get())
     screen.fill(WHITE)
 
     ## LOOP ##
 
-    #game.loop()
+    for loop in loop_list:
+        loop()
 
     ## LOOP ##
 
-    pen_list.draw(screen)
+    for sprite in sprite_list.sprites():
+        for line in sprite.get_line_path():
+            pygame.draw.lines(screen, (0, 0, 0), False, line, sprite.pen_size())
     sprite_list.draw(screen)
     sprite_list.update()
     pygame.display.flip()

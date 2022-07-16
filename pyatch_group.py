@@ -1,14 +1,16 @@
 import pygame
 from sprite import Sprite
 
+
 # This class is for pyatch sprites ONLY
+# NOTE: This class has somewhat of a misleading name. This is not used to store a group of sprites that visually
+# represents a sprite's pen path. This functions as a regular group but it also adds the
 
-class PenGroup(pygame.sprite.Group):
+class PyatchGroup(pygame.sprite.Group):
 
-    def __init__(self, pen_layer_group, *sprites):
+    def __init__(self, *sprites):
         pygame.sprite.Group.__init__(self)
         self.add(*sprites)
-        self.target_pen_group = pen_layer_group
 
     def draw(self, surface):
         surface_blit = surface.blit
@@ -16,9 +18,11 @@ class PenGroup(pygame.sprite.Group):
         self.lostsprites = []
         dirty_append = dirty.append
         for sprite in self.sprites():
-            if sprite.pen_state():
-                self.target_pen_group.add(Sprite('data/penmark.png', x = (sprite.rect.x + sprite.rect.width/2), y = sprite.rect.y + sprite.rect.height/2, scale=sprite.pen_size()/4))
+            if sprite.has_say():
+                surface_blit(sprite.say_bubble, (sprite.rect.x + sprite.rect.width, sprite.rect.y))
             old_rect = self.spritedict[sprite]
+            sprite.image.set_colorkey(sprite.key_color)
+            # print(pygame.surfarray.array3d(sprite.image.convert_alpha())[0, 0])
             new_rect = surface_blit(sprite.image, sprite.rect)
             if old_rect:
                 if new_rect.colliderect(old_rect):
