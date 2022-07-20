@@ -65,10 +65,22 @@ class Sensing:
                 self.__down_keys[event.key] = 0
             if event.type == pygame.QUIT:
                 self.done = True
-        #print (self.__down_keys)
+        # print (self.__down_keys)
 
     def key_pressed(self, key):
         return self.__down_keys.get(key, 0) == 1
+
+    def mouse_pos(self):
+        return pygame.mouse.get_pos()
+
+    def mouse_x(self):
+        return self.mouse_pos()[0]
+
+    def mouse_y(self):
+        return self.mouse_pos()[1]
+
+    def mouse_pressed(self):
+        return pygame.mouse.get_pressed()[0] == 1
 
 
 sensing = Sensing()

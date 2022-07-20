@@ -4,7 +4,6 @@ import pygame
 
 from pyatch_group import PyatchGroup
 import sprite
-from pygame.sprite import Group
 
 # Define some colors
 

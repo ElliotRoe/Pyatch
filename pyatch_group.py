@@ -18,8 +18,6 @@ class PyatchGroup(pygame.sprite.Group):
         self.lostsprites = []
         dirty_append = dirty.append
         for sprite in self.sprites():
-            if sprite.has_say():
-                surface_blit(sprite.say_bubble, (sprite.rect.x + sprite.rect.width, sprite.rect.y))
             old_rect = self.spritedict[sprite]
             sprite.image.set_colorkey(sprite.key_color)
             # print(pygame.surfarray.array3d(sprite.image.convert_alpha())[0, 0])
@@ -33,4 +31,6 @@ class PyatchGroup(pygame.sprite.Group):
             else:
                 dirty_append(new_rect)
             self.spritedict[sprite] = new_rect
+            if sprite.has_say():
+                surface_blit(sprite.say_bubble, (sprite.rect.x + sprite.rect.width, sprite.rect.y))
         return dirty

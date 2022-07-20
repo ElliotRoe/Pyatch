@@ -1,4 +1,5 @@
 import math
+import random
 import time
 
 import cv2
@@ -24,7 +25,7 @@ class Sprite(pygame.sprite.Sprite):
 
     # Constructor. Pass in the color of the block,
     # and its x and y position
-    def __init__(self, image_path="data/sprites/ScratchCat.png", scale=1, rotation_offset=0, x=700 / 2 - 120,
+    def __init__(self, image_path="data/sprites/ScratchCat.png", scale=1, rotation_offset=90, x=700 / 2 - 120,
                  y=400 / 2 - 100,
                  r_rule=RotationRule.FREE):
         # Call the parent class (Sprite) constructor
@@ -49,7 +50,7 @@ class Sprite(pygame.sprite.Sprite):
                 else:
                     new_temp_image[j][i] = (temp_image[i][j][2], temp_image[i][j][1], temp_image[i][j][0])
         self.base_image = pygame.surfarray.make_surface(new_temp_image)
-        #self.orig_image = pygame.transform.rotate(self.orig_image, -1 * self.__rotation_offset)
+        #self.base_image = pygame.transform.rotate(self.base_image, -1 * self.__rotation_offset)
         self.image = pygame.transform.rotate(self.base_image, 0)
 
         # Rotates the image to fix the weirdness of pyatch images
@@ -60,7 +61,7 @@ class Sprite(pygame.sprite.Sprite):
 
         self.__exec_set_x(x)
         self.__exec_set_y(y)
-        #self.__exec_set_rotation(self.__rotation_offset)
+        self.__exec_set_rotation(self.__rotation_offset)
 
         self.__font = pygame.font.SysFont("Arial", 28)
         self.say_bubble = None
@@ -70,6 +71,9 @@ class Sprite(pygame.sprite.Sprite):
         self.__say_border_color = (200, 200, 200)
 
         self.alpha = 255
+
+        self.__screen_width = 700
+        self.__screen_height = 400
 
     def move(self, dist):
         self.__exec_move(dist)
@@ -114,10 +118,25 @@ class Sprite(pygame.sprite.Sprite):
         if self.__pen_state:
             self.__new_line_seg()
 
-    def point_towards(self, x, y):
-        self.__exec_point_towards(x, y)
+    def point_towards(self, pos):
+        self.__exec_point_towards(pos[0], pos[1])
         if self.__pen_state:
             self.__new_line_seg()
+
+    def go_to(self, x, y):
+        if self.__pen_state:
+            self.__new_line_seg()
+        self.__exec_set_x(x)
+        self.__exec_set_y(y)
+        if self.__pen_state:
+            self.__update_cur_line()
+
+    def go_to_rand(self):
+        if self.__pen_state:
+            self.__new_line_seg()
+        self.__exec_go_to_rand()
+        if self.__pen_state:
+            self.__update_cur_line()
 
     def __update_cur_line(self):
         self.__line_path.update([self.get_center_x(), self.get_center_y()])
@@ -134,8 +153,8 @@ class Sprite(pygame.sprite.Sprite):
     ## Movement Functions ##
 
     def __exec_point_towards(self, x, y):
-        rel_x = x - self.rect.x
-        rel_y = y - self.rect.y
+        rel_x = x - self.get_center_x()
+        rel_y = y - self.get_center_y()
 
         angle = math.degrees(math.atan2(-rel_y, rel_x))
 
@@ -149,7 +168,7 @@ class Sprite(pygame.sprite.Sprite):
     def __exec_set_rotation(self, rotation):
         self.__rotation = rotation
         if self.__rotation_rule == self.RotationRule.FREE:
-            self.image = pygame.transform.rotate(self.base_image, self.__rotation)
+            self.image = pygame.transform.rotate(self.base_image, self.__rotation + -1 * self.__rotation_offset)
         elif self.__rotation_rule == self.RotationRule.FREE_Y:
             if abs(self.__rotation % 360) - 90 > 90:
                 self.image = pygame.transform.flip(self.base_image, True, False)
@@ -189,6 +208,13 @@ class Sprite(pygame.sprite.Sprite):
         dist_y = dist * math.cos(math.radians(self.__rotation))
         self.__exec_change_x(dist_x)
         self.__exec_change_y(dist_y)
+
+    def __exec_go_to(self, x, y):
+        self.__exec_set_x(x)
+        self.__exec_set_y(y)
+
+    def __exec_go_to_rand(self):
+        self.__exec_go_to(random.randint(0, self.__screen_width - self.rect.width), random.randint(0, self.__screen_height - self.rect.height))
 
     ## Pen Functions ##
 
@@ -264,7 +290,7 @@ class Sprite(pygame.sprite.Sprite):
         self.imd.hue_shift_image_arr(hue)
         self.image = pygame.surfarray.make_surface(self.imd.get_image_arr())
         self.base_image = self.image
-        self.__exec_set_rotation(self.__rotation)
+        #self.__exec_set_rotation(self.__rotation)
         #end = time.time()
         #print("Hue shift took: " + str(end - start))
 
