@@ -1,12 +1,12 @@
+
 import threading
 
 import pygame
 
-from pyatch_group import PyatchGroup
-import sprite
+from lib.pyatch_group import PyatchGroup
+import lib.sprite as sprite
 
 # Define some colors
-
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -19,7 +19,7 @@ pygame.init()
 font = pygame.font.Font('data/fonts/arial.ttf', 20)
 
 
-from sensing import sensing
+from lib.sensing import sensing
 
 # Set the height and width of the screen
 screen_width = 700

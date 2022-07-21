@@ -7,10 +7,10 @@ import numpy as np
 import pygame
 from enum import Enum
 import queue
-import imagemodder as imd
+import lib.imagemodder as imd
 
 
-from line_path import LinePath
+from lib.line_path import LinePath
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -25,7 +25,7 @@ class Sprite(pygame.sprite.Sprite):
 
     # Constructor. Pass in the color of the block,
     # and its x and y position
-    def __init__(self, image_path="data/sprites/ScratchCat.png", scale=1, rotation_offset=90, x=700 / 2 - 120,
+    def __init__(self, image_word = "Cat", image_path="data/sprites/ScratchCat.png", scale=1, rotation_offset=90, x=700 / 2 - 120,
                  y=400 / 2 - 100,
                  r_rule=RotationRule.FREE):
         # Call the parent class (Sprite) constructor
@@ -41,8 +41,17 @@ class Sprite(pygame.sprite.Sprite):
         self.__line_path = LinePath()
         # Load the image and prep it for colorkey, and color effects
         # Color key set when sprite is rendered. Idk why it works only there but not here
-        temp_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-        new_temp_image = np.zeros((temp_image.shape[0], temp_image.shape[1], 3), dtype=np.uint8)
+        self.image_path = image_path
+        if image_word == "Dog" or image_word == "dog":
+            self.image_path = "data/sprites/Dog.png"
+        elif image_word == "Cat":
+            self.image_path = "data/sprites/ScratchCat.png"
+        elif image_word == "Person" or image_word == "person":
+            self.image_path = "data/sprites/Person.png"
+        elif image_word == "secret" or image_word == "Secret":
+            self.image_path = "data/sprites/charizard.png"
+        temp_image = cv2.imread(self.image_path, cv2.IMREAD_UNCHANGED)
+        new_temp_image = np.zeros((temp_image.shape[1], temp_image.shape[0], 3), dtype=np.uint8)
         for i in range(temp_image.shape[0]):
             for j in range(temp_image.shape[1]):
                 if temp_image[i][j][3] == 0:
@@ -112,6 +121,12 @@ class Sprite(pygame.sprite.Sprite):
         self.__exec_rotate(angle)
         if self.__pen_state:
             self.__new_line_seg()
+
+    def turn_left(self, angle):
+        self.rotate(-angle)
+
+    def turn_right(self, angle):
+        self.rotate(angle)
 
     def set_rotation(self, angle):
         self.__exec_set_rotation(angle)
@@ -221,12 +236,10 @@ class Sprite(pygame.sprite.Sprite):
     def pen_state(self):
         return self.__pen_state
 
-    # Parameter is to preserve compatibility with update method
     def pen_down(self):
         self.__pen_state = True
         self.__new_line_seg()
 
-    # Parameter is to preserve compatibility with update method
     def pen_up(self):
         self.__pen_state = False
         self.__line_path.clear()

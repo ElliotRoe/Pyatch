@@ -1,16 +1,20 @@
-from sprite import Sprite
+# ↓↓↓↓↓ IMPORT AREA ↓↓↓↓↓ #
+import lib.main as main
+from time import sleep
+from lib.sprite import Sprite
+from lib.sensing import sensing, Key
 
-# MAKE ALL OF YOUR SPRITES HERE #
-default_cat = Sprite()
+# ↓↓↓↓↓ SPRITE AREA ↓↓↓↓↓ #
+cat = Sprite()
 
 
-# PUT ALL YOUR CODE IN HERE #
+# ↓↓↓↓↓ START AREA ↓↓↓↓↓ #
 def start():
-    default_cat.say("Hello!")
-    default_cat.change_effect("color", 30)
+    cat.say("Hello!")
 
 
-def loop2():
-    default_cat.go_to_rand()
+# ↓↓↓↓↓ LOOP AREA ↓↓↓↓↓ #
+def loop():
+    cat.move(10)
 
 

@@ -1,5 +1,5 @@
 import pygame
-from sprite import Sprite
+from lib.sprite import Sprite
 
 
 # This class is for pyatch sprites ONLY
